@@ -1,3 +1,18 @@
+
+## Slidershim with Brokenithm Hand Tracking
+
+Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.
+To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.  
+
+Uses: https://github.com/victordibia/handtrack.js/  
+
+TODO:  
+- Add additional input options so a user can tweak the handtrack parameters etc.
+- Modify `handtrack.js` so it loads the handtracking webmodel not from a CDN, but locally. The webmodel is available at their repo too.
+- Create and use the minified versions of the src js files
+- Separate the css file?
+
+
 <img align="right" alt="logo" width="100" height="100" src="public/icon.png">
 
 # [slidershim](https://github.com/4yn/slidershim)

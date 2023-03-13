@@ -197,11 +197,16 @@
           <option value="tasoller-two">GAMO2 Tasoller, 2.0 HID Firmware</option>
           <option value="yuancon">Yuancon Laverita, HID Firmware</option>
           <option value="yubideck">大四 / Yubideck, HID Firmware 1.0</option>
-          <option value="yubideck-three">大四 / Yubideck, HID Firmware 3.0</option>
+          <option value="yubideck-three"
+            >大四 / Yubideck, HID Firmware 3.0</option
+          >
           <option value="diva">Slider over Serial</option>
           <option value="brokenithm">Brokenithm</option>
           <option value="brokenithm-led">Brokenithm + Led</option>
           <option value="brokenithm-nostalgia">Brokestalgia (28k)</option>
+          <option value="brokenithm-handtracking"
+            >Brokenithm + camera hand tracking</option
+          >
         </select>
       </div>
     </div>
@@ -240,6 +245,18 @@
         <div class="label" />
         <div class="input">
           <div class="serverlist">
+            {#if deviceMode === "brokenithm-handtracking"}
+              Hand tracking website for PC browser & webcam will be running at:
+              <div class="iplist">
+                {ips
+                  .map(
+                    (x) =>
+                      `http://${x}:${brokenithmPort || 1606}/handtracker.html`
+                  )
+                  .join("\n")
+                  .trim()}
+              </div>
+            {/if}
             Brokenithm will be running at one of:
             <div class="iplist">
               {ips

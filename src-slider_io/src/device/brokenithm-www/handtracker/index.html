@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Brokenithm with Handtrack.js for air notes</title>
+  </head>
+  <style>
+    body {
+      background-color: #222;
+      color: #ccc;
+      margin: 0;
+    }
+    .circle {
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      border-radius: 50%;
+    }
+    #zone {
+      width: 650px;
+      position: absolute;
+      pointer-events: none;
+    }
+    .pink {
+      background: #f0f;
+    }
+    .green {
+      background: rgba(0, 255, 0, 0.2);
+    }
+    #video {
+      display: none;
+    }
+    .inline {
+      display: inline;
+    }
+    #customHeight {
+      width: 3em;
+      color: #ccc;
+      background: #111;
+    }
+    #content {
+      display: block;
+      text-align-last: center;
+      margin-top: 50px;
+    }
+  </style>
+  <body>
+    <div id="content">
+      <div>
+        <div id="circle" class="circle pink"></div>
+        <div id="circle2" class="circle pink"></div>
+        <div id="zone" class="green"></div>
+      </div>
+      <div id="message">Loading Handtrack.js model... Please wait.</div>
+      <div>
+        <video autoplay="autoplay" id="video"></video>
+        <canvas id="canvas"></canvas>
+      </div>
+      <div>
+        Air Key Level (-1 is no air key):
+        <div id="zoneValue" class="inline">-1</div>
+        .
+      </div>
+      <div>
+        ZoneHeight:
+        <input type="number" min="0" value="250" step="25" id="customHeight" />
+        px.
+      </div>
+      <div>
+        Pause input sending:
+        <button id="pauseButton">Running</button>
+      </div>
+    </div>
+    <script src="lib/handtrack.min.js"></script>
+    <script src="handtracker-src.js"></script>
+  </body>
+</html>
