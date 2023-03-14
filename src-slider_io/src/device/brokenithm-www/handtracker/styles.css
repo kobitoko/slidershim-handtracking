@@ -1,0 +1,41 @@
+body {
+  background-color: #222;
+  color: #ccc;
+  margin: 0;
+}
+.circle {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  border-radius: 50%;
+}
+#zone {
+  width: 650px;
+  position: absolute;
+  pointer-events: none;
+}
+.pink {
+  background: #f0f;
+}
+.green {
+  background: rgba(0, 255, 0, 0.2);
+}
+#video {
+  display: none;
+}
+.inline {
+  display: inline;
+}
+.range {
+  width: 4em;
+  color: #ccc;
+  background: #111;
+}
+#content {
+  display: block;
+  text-align-last: center;
+  margin-top: 15px;
+}
+.button {
+  margin: 0.25em;
+}

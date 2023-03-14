@@ -6,8 +6,15 @@ const circle2 = document.getElementById("circle2");
 const zone = document.getElementById("zone");
 const height = document.getElementById("zoneValue");
 const customHeight = document.getElementById("customHeight");
-const pauseButton = document.getElementById("pauseButton");
 let canvasOffset = null;
+
+const detectionsPerSeconds = document.getElementById("detectionsPerSeconds");
+const pauseButton = document.getElementById("pauseButton");
+const hFlip = document.getElementById("hFlip");
+const scoreThreshold = document.getElementById("scoreThreshold");
+const iouThreshold = document.getElementById("iouThreshold");
+const modelType = document.getElementById("modelType");
+const modelSize = document.getElementById("modelSize");
 
 // Handtrack.js https://victordibia.com/handtrack.js/#/docs
 const modelParams = {
@@ -15,13 +22,15 @@ const modelParams = {
   outputStride: 16,
   imageScaleFactor: 1,
   maxNumBoxes: 3, // Head is the 3rd bbox.
-  iouTreshold: 0.2,
+  iouThreshold: 0.2,
   scoreThreshold: 0.35,
   modelType: "ssd320fpnlite",
   modelSize: "large",
 };
 
 let paused = false;
+let cameraRenderer = true;
+let horizontalFlip = true;
 let hand0 = {};
 let hand1 = {};
 let lastHandValue0 = -1;
@@ -32,16 +41,7 @@ let zoneLevels = zoneHeight / 6;
 // Initially taken from https://github.com/victordibia/handtrack.js/tree/master/demo
 handTrack.load(modelParams).then((m) => {
   console.info("Model loaded.");
-  window.addEventListener("beforeunload", (e) => {
-    if (model != null) {
-      console.info("Disposing the model instance.");
-      model.dispose();
-    }
-  });
-  pauseButton.addEventListener("click", (e) => {
-    paused = !paused;
-    pauseButton.textContent = paused ? "Paused" : "Running";
-  });
+  initializeListeners();
   model = m;
   message = document.getElementById("message");
   message.style.display = "none";
@@ -49,6 +49,56 @@ handTrack.load(modelParams).then((m) => {
   wsConnect();
   setInterval(wsWatch, 1000);
 });
+
+function updateModel(params) {
+  model.setModelParameters(params);
+}
+
+function initializeListeners() {
+  // Disposing the model instance from GPU memory. With Tensorflow.js this does not happen automatically.
+  window.addEventListener("beforeunload", () => {
+    if (model != null) {
+      console.info("Disposing the model instance.");
+      model.dispose();
+    }
+  });
+  // Pause sending input to slidershim
+  pauseButton.addEventListener("click", () => {
+    paused = !paused;
+    pauseButton.textContent = paused ? "Paused" : "Running";
+  });
+  // Disable rendering the camera renderer, saves some CPU probably.
+  cameraButton.addEventListener("click", () => {
+    cameraRenderer = !cameraRenderer;
+    cameraButton.textContent = cameraRenderer
+      ? "Disable Camera Renderer"
+      : "Enable Camera Renderer";
+  });
+  // Update horizontal flip.
+  hFlip.addEventListener("click", () => {
+    horizontalFlip = !horizontalFlip;
+    hFlip.textContent = horizontalFlip
+      ? "Camera Flipped Horizontally"
+      : "Camera Not Flipped Horizontally";
+    updateModel({ flipHorizontal: horizontalFlip });
+  });
+  // Update score threshold.
+  scoreThreshold.addEventListener("change", () => {
+    updateModel({ scoreThreshold: scoreThreshold.value });
+  });
+  // Update iou threshold.
+  iouThreshold.addEventListener("change", () => {
+    updateModel({ iouThreshold: iouThreshold.value });
+  });
+  // Update model type.
+  modelType.addEventListener("change", () => {
+    updateModel({ modelType: modelType.value });
+  });
+  // Update model size.
+  modelSize.addEventListener("change", () => {
+    updateModel({ modelSize: modelSize.value });
+  });
+}
 
 function startVideo() {
   handTrack.startVideo(video).then((status) => {
@@ -83,7 +133,9 @@ function runDetection() {
         }
       }
     }
-    model.renderPredictions(predictions, canvas, context, video);
+    if (cameraRenderer) {
+      model.renderPredictions(predictions, canvas, context, video);
+    }
     const handValue0 = getAirZoneValue0();
     const handValue1 = getAirZoneValue1();
     if (handValue0 != lastHandValue0 || handValue1 != lastHandValue1) {
@@ -100,7 +152,7 @@ function showResults(handValue0, handValue1) {
   canvasOffset = canvas.getBoundingClientRect();
   zone.style.left = canvasOffset.left + "px";
   zone.style.width = canvasOffset.width + "px";
-  const contentMarginTopOffset = 50;
+  const contentMarginTopOffset = 15;
   if (hand0?.id != null) {
     circle.style.transform =
       "translate3d(" +
@@ -118,6 +170,7 @@ function showResults(handValue0, handValue1) {
       "px,0)";
   }
   height.textContent = handValue0 + ", " + handValue1;
+  detectionsPerSeconds.textContent = model.getFPS();
 }
 
 function getHandCenter(index, bbox) {

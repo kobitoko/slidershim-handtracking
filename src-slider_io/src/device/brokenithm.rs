@@ -40,13 +40,36 @@ static BROKENITHM_STR_FILES: phf::Map<&'static str, (&'static str, &'static str)
   "index-go.html" => (include_str!("./brokenithm-www/index-go.html"), "text/html"),
   "index.html" => (include_str!("./brokenithm-www/index.html"), "text/html"),
   "handtracker.html" => (include_str!("./brokenithm-www/handtracker/index.html"), "text/html"),
-  "handtracker-src.js" => (include_str!("./brokenithm-www/handtracker/handtracker-src.js"), "text/html"),
-  "lib/handtrack.min.js" => (include_str!("./brokenithm-www/handtracker/lib/handtrack.min.js"), "text/html")
+  "styles.css" => (include_str!("./brokenithm-www/handtracker/styles.css"), "text/css"),
+  "handtracker-src.js" => (include_str!("./brokenithm-www/handtracker/handtracker-src.js"), "text/javascript"),
+  "lib/handtrack.min.js" => (include_str!("./brokenithm-www/handtracker/lib/handtrack.min.js"), "text/javascript"),
+  "webmodel/ssd320fpnlite/base/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/base/model.json"), "application/json"),
+  "webmodel/ssd320fpnlite/fp16/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/fp16/model.json"), "application/json"),
+  "webmodel/ssd320fpnlite/int8/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/int8/model.json"), "application/json"),
+  "webmodel/ssd640fpnlite/base/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/model.json"), "application/json"),
+  "webmodel/ssd640fpnlite/fp16/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/fp16/model.json"), "application/json"),
+  "webmodel/ssd640fpnlite/int8/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/int8/model.json"), "application/json"),
 };
 
 static BROKENITHM_BIN_FILES: phf::Map<&'static str, (&'static [u8], &'static str)> = phf_map! {
   "favicon.ico" => (include_bytes!("./brokenithm-www/favicon.ico"), "image/x-icon"),
   "icon.png" => (include_bytes!("./brokenithm-www/icon.png"), "image/png"),
+  "webmodel/ssd320fpnlite/base/group1-shard1of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/base/group1-shard1of3.bin"), "application/octet-stream"),
+  "webmodel/ssd320fpnlite/base/group1-shard2of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/base/group1-shard2of3.bin"), "application/octet-stream"),
+  "webmodel/ssd320fpnlite/base/group1-shard3of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/base/group1-shard3of3.bin"), "application/octet-stream"),
+  "webmodel/ssd320fpnlite/fp16/group1-shard1of2.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/fp16/group1-shard1of2.bin"), "application/octet-stream"),
+  "webmodel/ssd320fpnlite/fp16/group1-shard2of2.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/fp16/group1-shard2of2.bin"), "application/octet-stream"),
+  "webmodel/ssd320fpnlite/int8/group1-shard1of1.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/int8/group1-shard1of1.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard1of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard1of3.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard2of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard2of3.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard3of3.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard3of3.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard1of4.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard1of4.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard2of4.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard2of4.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard3of4.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard3of4.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/base/group1-shard4of4.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/base/group1-shard4of4.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/fp16/group1-shard1of2.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/fp16/group1-shard1of2.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/fp16/group1-shard2of2.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/fp16/group1-shard2of2.bin"), "application/octet-stream"),
+  "webmodel/ssd640fpnlite/int8/group1-shard1of1.bin" => (include_bytes!("./brokenithm-www/handtracker/lib/webmodel/ssd640fpnlite/int8/group1-shard1of1.bin"), "application/octet-stream"),
 };
 
 async fn serve_file(path: &str) -> Result<Response<Body>, Infallible> {

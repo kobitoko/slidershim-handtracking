@@ -3,47 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Brokenithm with Handtrack.js for air notes</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <style>
-    body {
-      background-color: #222;
-      color: #ccc;
-      margin: 0;
-    }
-    .circle {
-      width: 10px;
-      height: 10px;
-      position: absolute;
-      border-radius: 50%;
-    }
-    #zone {
-      width: 650px;
-      position: absolute;
-      pointer-events: none;
-    }
-    .pink {
-      background: #f0f;
-    }
-    .green {
-      background: rgba(0, 255, 0, 0.2);
-    }
-    #video {
-      display: none;
-    }
-    .inline {
-      display: inline;
-    }
-    #customHeight {
-      width: 3em;
-      color: #ccc;
-      background: #111;
-    }
-    #content {
-      display: block;
-      text-align-last: center;
-      margin-top: 50px;
-    }
-  </style>
   <body>
     <div id="content">
       <div>
@@ -62,13 +23,66 @@
         .
       </div>
       <div>
-        ZoneHeight:
-        <input type="number" min="0" value="250" step="25" id="customHeight" />
+        <label for="customHeight">ZoneHeight:</label>
+        <input
+          type="number"
+          min="0"
+          value="250"
+          step="25"
+          id="customHeight"
+          class="range"
+        />
         px.
       </div>
       <div>
-        Pause input sending:
+        <label for="pauseButton">Pause Input Sending:</label>
         <button id="pauseButton">Running</button>
+      </div>
+      Detections per Second:
+      <div id="detectionsPerSeconds" class="inline">0</div>
+      <div>
+        <button id="cameraButton">Disable Camera Renderer</button>
+        <label for="hFlip">Camera Flip Horizontal</label>
+        <input type="checkbox" id="hFlip" checked />
+        <div>
+          <label for="scoreThreshold">Score Threshold:</label>
+          <input
+            type="number"
+            min="0.1"
+            max="1"
+            value="0.35"
+            step="0.05"
+            id="scoreThreshold"
+            class="range"
+          />
+        </div>
+        <div>
+          <label for="iouThreshold">Iou Threshold:</label>
+          <input
+            type="number"
+            min="0.1"
+            max="1"
+            value="0.2"
+            step="0.1"
+            id="iouThreshold"
+            class="range"
+          />
+        </div>
+        <div>
+          <label for="modelType">Model Type:</label>
+          <select id="modelType">
+            <option value="ssd320fpnlite" selected>ssd320fpnlite</option>
+            <option value="ssd640fpnlite">ssd640fpnlite</option>
+          </select>
+        </div>
+        <div>
+          <label for="modelSize">Model Size:</label>
+          <select id="modelSize">
+            <option value="large" selected>large</option>
+            <option value="medium">medium</option>
+            <option value="small">small</option>
+          </select>
+        </div>
       </div>
     </div>
     <script src="lib/handtrack.min.js"></script>
