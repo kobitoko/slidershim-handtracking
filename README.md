@@ -1,17 +1,12 @@
-
 ## Slidershim with Brokenithm Hand Tracking
 
-Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.
-To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.  
+Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.  
+To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.
 
-Uses: https://github.com/victordibia/handtrack.js/  
+Uses: https://github.com/victordibia/handtrack.js/
 
-TODO:  
-- Add additional input options so a user can tweak the handtrack parameters etc.
-- Modify `handtrack.js` so it loads the handtracking webmodel not from a CDN, but locally. The webmodel is available at their repo too.
-- Create and use the minified versions of the src js files
-- Separate the css file?
-
+- Has input options so a user can tweak the handtrack parameters in `handtracker.html`.
+- Modified `handtrack.js` so it loads the handtracking webmodel not from a CDN but locally. The webmodel is taken from handtrack.js' repository.
 
 <img align="right" alt="logo" width="100" height="100" src="public/icon.png">
 
@@ -27,6 +22,8 @@ Software adapter for various Chunithm slider controllers with a built-in Brokeni
 
 ## Changelog
 
+- v0.5.1
+  - Add Brokenithm option with webcam hand tracking for air notes
 - v0.5.0
   - Support for Yubideck 3.0 firmware
 - v0.4.3

@@ -2,13 +2,14 @@
  ___| (_) __| | ___ _ __ ___| |__ (_)_ __ ___  
 / __| | |/ _` |/ _ \ '__/ __| '_ \| | '_ ` _ \ 
 \__ \ | | (_| |  __/ |  \__ \ | | | | | | | | |
-|___/_|_|\__,_|\___|_|  |___/_| |_|_|_| |_| |_| v0.5.0
+|___/_|_|\__,_|\___|_|  |___/_| |_|_|_| |_| |_| v0.5.1
 =============================================== 
 
 https://github.com/4yn/slidershim
 
 # Changelog
-
+- v0.5.1
+  - Add Brokenithm option with webcam hand tracking for air notes (https://github.com/kobitoko/slidershim-handtracking)
 - v0.5.0
   - Support for Yubideck 3.0 firmware
 - v0.4.3

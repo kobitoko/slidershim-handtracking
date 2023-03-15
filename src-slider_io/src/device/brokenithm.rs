@@ -41,7 +41,7 @@ static BROKENITHM_STR_FILES: phf::Map<&'static str, (&'static str, &'static str)
   "index.html" => (include_str!("./brokenithm-www/index.html"), "text/html"),
   "handtracker.html" => (include_str!("./brokenithm-www/handtracker/index.html"), "text/html"),
   "styles.css" => (include_str!("./brokenithm-www/handtracker/styles.css"), "text/css"),
-  "handtracker-src.js" => (include_str!("./brokenithm-www/handtracker/handtracker-src.js"), "text/javascript"),
+  "handtracker.min.js" => (include_str!("./brokenithm-www/handtracker/handtracker.min.js"), "text/javascript"),
   "lib/handtrack.min.js" => (include_str!("./brokenithm-www/handtracker/lib/handtrack.min.js"), "text/javascript"),
   "webmodel/ssd320fpnlite/base/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/base/model.json"), "application/json"),
   "webmodel/ssd320fpnlite/fp16/model.json" => (include_str!("./brokenithm-www/handtracker/lib/webmodel/ssd320fpnlite/fp16/model.json"), "application/json"),
