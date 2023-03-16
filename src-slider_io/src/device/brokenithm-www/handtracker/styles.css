@@ -28,8 +28,8 @@ body {
 }
 .range {
   width: 4em;
-  color: #ccc;
-  background: #111;
+  color: #eee;
+  background: #111111AA;
 }
 #content {
   display: block;
@@ -38,4 +38,11 @@ body {
 }
 .button {
   margin: 0.25em;
+}
+.settingsPanel {
+  display: block;
+  position: absolute;
+  background-color: #11111199;
+  padding: 1em;
+  z-index: 1;
 }

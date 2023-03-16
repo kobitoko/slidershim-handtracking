@@ -91,8 +91,8 @@ function initializeListeners() {
     updateModel({ iouThreshold: iouThreshold.value });
   });
   // Update model type.
-  modelType.addEventListener("change", () => {
-    updateModel({ modelType: modelType.value });
+  trackingConfidence.addEventListener("change", () => {
+    updateModel({ modelType: trackingConfidence.value });
   });
   // Update model size.
   modelSize.addEventListener("change", () => {

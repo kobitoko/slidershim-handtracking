@@ -1,91 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <title>Brokenithm with Handtrack.js for air notes</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="lib/camera_utils/camera_utils.js"></script>
+    <script src="lib/control_utils/control_utils.js"></script>
+    <script src="lib/drawing_utils/drawing_utils.js"></script>
+    <script src="lib/hands/hands.js"></script>
   </head>
+
   <body>
     <div id="content">
+      <div class="settingsPanel">
+        <div>
+          Air Key Level (-1 is no air key):
+          <div id="zoneValue" class="inline">-1</div>
+          .
+        </div>
+        <div>
+          <label for="customHeight">ZoneHeight:</label>
+          <input
+            type="number"
+            min="0"
+            value="250"
+            step="25"
+            id="customHeight"
+            class="range"
+          />
+          px.
+        </div>
+        <div>
+          <label for="pauseButton">Pause Input Sending:</label>
+          <button id="pauseButton">Running</button>
+        </div>
+        <div>
+          <button id="cameraButton">Disable Camera Renderer</button>
+          <label for="hFlip">Camera Flip Horizontal</label>
+          <input type="checkbox" id="hFlip" checked />
+          <div>
+            <label for="trackingConfidence">Min Tracking Confidence:</label>
+            <input
+              type="number"
+              min="0.05"
+              max="1"
+              value="0.4"
+              step="0.05"
+              id="trackingConfidence"
+              class="range"
+            />
+          </div>
+          <div>
+            <label for="detectionConfidence">Min Detection Confidence:</label>
+            <input
+              type="number"
+              min="0.05"
+              max="1"
+              value="0.4"
+              step="0.05"
+              id="detectionConfidence"
+              class="range"
+            />
+          </div>
+          <div>
+            <label for="complexModel">Model Complexity:</label>
+            <input
+              type="number"
+              min="0"
+              max="1"
+              value="1"
+              step="1"
+              id="complexModel"
+              class="range"
+            />
+          </div>
+        </div>
+      </div>
       <div>
         <div id="circle" class="circle pink"></div>
         <div id="circle2" class="circle pink"></div>
         <div id="zone" class="green"></div>
       </div>
-      <div id="message">Loading Handtrack.js model... Please wait.</div>
-      <div>
+      <div class="container">
         <video autoplay="autoplay" id="video"></video>
-        <canvas id="canvas"></canvas>
-      </div>
-      <div>
-        Air Key Level (-1 is no air key):
-        <div id="zoneValue" class="inline">-1</div>
-        .
-      </div>
-      <div>
-        <label for="customHeight">ZoneHeight:</label>
-        <input
-          type="number"
-          min="0"
-          value="250"
-          step="25"
-          id="customHeight"
-          class="range"
-        />
-        px.
-      </div>
-      <div>
-        <label for="pauseButton">Pause Input Sending:</label>
-        <button id="pauseButton">Running</button>
-      </div>
-      Detections per Second:
-      <div id="detectionsPerSeconds" class="inline">0</div>
-      <div>
-        <button id="cameraButton">Disable Camera Renderer</button>
-        <label for="hFlip">Camera Flip Horizontal</label>
-        <input type="checkbox" id="hFlip" checked />
-        <div>
-          <label for="scoreThreshold">Score Threshold:</label>
-          <input
-            type="number"
-            min="0.1"
-            max="1"
-            value="0.35"
-            step="0.05"
-            id="scoreThreshold"
-            class="range"
-          />
-        </div>
-        <div>
-          <label for="iouThreshold">Iou Threshold:</label>
-          <input
-            type="number"
-            min="0.1"
-            max="1"
-            value="0.2"
-            step="0.1"
-            id="iouThreshold"
-            class="range"
-          />
-        </div>
-        <div>
-          <label for="modelType">Model Type:</label>
-          <select id="modelType">
-            <option value="ssd320fpnlite" selected>ssd320fpnlite</option>
-            <option value="ssd640fpnlite">ssd640fpnlite</option>
-          </select>
-        </div>
-        <div>
-          <label for="modelSize">Model Size:</label>
-          <select id="modelSize">
-            <option value="large" selected>large</option>
-            <option value="medium">medium</option>
-            <option value="small">small</option>
-          </select>
-        </div>
+        <!--canvas width="640px" height="360px" id="canvas"></canvas-->
+        <canvas width="1280px" height="720px" id="canvas"></canvas>
       </div>
     </div>
-    <script src="lib/handtrack.min.js"></script>
-    <script src="handtracker.min.js"></script>
+    <script src="mediapipe-hand-src.js"></script>
   </body>
 </html>
