@@ -3,10 +3,19 @@
 Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.  
 To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.
 
-Uses: https://github.com/victordibia/handtrack.js/
+While it still isn't fast enough to play more difficult tracks with many varying airnotes or like Expert diffculties and above, it basically still gives sort of that authentic hand raising experience, if you want to try that out how it would feel like.  
+It still also depends on how fast your webcam is, and also what angle the webcam looks at your hand.  
+I have the camera pointing downwards at the table at a ~45 degree angle from table's perpendicular.  
+For accuracy it tends to do better when the hand's top profile is pointing towards the camera, but still at an angle so that raising your hand would bring its position towards the top of the captured image.
 
-- Has input options so a user can tweak the handtrack parameters in `handtracker.html`.
-- Modified `handtrack.js` so it loads the handtracking webmodel not from a CDN but locally. The webmodel is taken from handtrack.js' repository.
+Uses hand tracking: Hands from https://github.com/google/mediapipe
+
+- Has input options so you can tweak some handtracking parameters in `handtracker.html`.
+- [Downloaded MediaPipe from NPM](https://www.npmjs.com/package/@mediapipe/hands) and included its files so it loads the webmodel not from a CDN but all locally.
+
+To get the minified .js file I used https://coderaiser.github.io/minify/  
+`npm i minify -g`  
+`minify mediapipe-hands-src.js > mediapipe-hands-min.js`
 
 <img align="right" alt="logo" width="100" height="100" src="public/icon.png">
 
@@ -22,6 +31,8 @@ Software adapter for various Chunithm slider controllers with a built-in Brokeni
 
 ## Changelog
 
+- v0.5.2
+  - Brokenithm hand tracking changed hand tracking library to MediaPipe
 - v0.5.1
   - Add Brokenithm option with webcam hand tracking for air notes
 - v0.5.0
@@ -82,7 +93,7 @@ Software adapter for various Chunithm slider controllers with a built-in Brokeni
 
 ## Setup Instructions
 
-1. [Download here](https://github.com/4yn/slidershim/releases/latest)
+1. [Download here](https://github.com/kobitoko/slidershim-handtracking/releases/latest)
 2. Run the msi installer (recommended for first run) or extract zip to any location you like.
 3. Run `slidershim.exe`.
 4. Pick your input device, output method and preferred lighting.

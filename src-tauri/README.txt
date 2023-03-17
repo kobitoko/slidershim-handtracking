@@ -8,6 +8,8 @@
 https://github.com/4yn/slidershim
 
 # Changelog
+- v0.5.2
+  - Brokenithm hand tracking changed hand tracking library to MediaPipe
 - v0.5.1
   - Add Brokenithm option with webcam hand tracking for air notes (https://github.com/kobitoko/slidershim-handtracking)
 - v0.5.0
