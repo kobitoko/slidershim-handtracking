@@ -8,6 +8,9 @@
 https://github.com/4yn/slidershim
 
 # Changelog
+- v0.5.3
+  - Brokenithm hand tracking: Added save feature using localStorage, to save ZoneHeight, Horizontal Camera Flip, Tracking and Detection Confidence, and Model Complexity.
+  - Brokenithm hand tracking: Fixed a bug where the zone height would start off at a different size and not change until readjusting the zone height.
 - v0.5.2
   - Brokenithm hand tracking changed hand tracking library to MediaPipe
 - v0.5.1

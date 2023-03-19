@@ -25,7 +25,7 @@ let hand0 = {};
 let hand1 = {};
 let lastHandValue0 = -1;
 let lastHandValue1 = -1;
-let zoneHeight = 175;
+let zoneHeight = 200;
 let zoneLevels = zoneHeight / 6;
 
 function clamp(input, min, max) {
@@ -38,14 +38,41 @@ function clamp(input, min, max) {
   return input;
 }
 
-function initializeListeners() {
+function getSavedOrDefault(key, defaultValue) {
+  const saved = window.localStorage.getItem(key);
+  if (saved === null) {
+    return defaultValue;
+  }
+  return saved;
+}
+
+function updateInput(params) {
+  // Update height zone.
+  zoneHeight = Number(getSavedOrDefault("customHeight", zoneHeight));
+  zoneLevels = zoneHeight / 6;
+  customHeight.value = zoneHeight;
   zone.style.height = zoneHeight + "px";
+  // Update horizontal flip.
+  hFlip.textContent = params.selfieMode
+    ? "Unflip Camera Horizontally"
+    : "Flip Camera Horizontally";
+  // Update min tracking confidence.
+  trackingConfidence.value = params.minTrackingConfidence;
+  // Update min detection confidence.
+  detectionConfidence.value = params.minDetectionConfidence;
+  // Update model complexity.
+  complexModel.value = params.modelComplexity;
+}
+
+function initializeListeners() {
+  // Height zone input listener
   customHeight.addEventListener("change", () => {
     const newValue = Number(clamp(customHeight.value, 1, canvasElement.height));
     zoneHeight = newValue;
     zoneLevels = zoneHeight / 6;
     zone.style.height = zoneHeight + "px";
     customHeight.value = newValue;
+    window.localStorage.setItem("customHeight", newValue);
   });
   // Pause sending input to slidershim
   pauseButton.addEventListener("click", () => {
@@ -63,27 +90,31 @@ function initializeListeners() {
   hFlip.addEventListener("click", () => {
     horizontalFlip = !horizontalFlip;
     hFlip.textContent = horizontalFlip
-      ? "Camera Flipped Horizontally"
-      : "Camera Not Flipped Horizontally";
+      ? "Unflip Camera Horizontally"
+      : "Flip Camera Horizontally";
     hands.setOptions({ selfieMode: horizontalFlip });
+    window.localStorage.setItem("hFlip", horizontalFlip);
   });
   // Update min tracking confidence.
   trackingConfidence.addEventListener("change", () => {
     const newValue = Number(clamp(trackingConfidence.value, 0.05, 1));
     hands.setOptions({ minTrackingConfidence: newValue });
     trackingConfidence.value = newValue;
+    window.localStorage.setItem("trackingConfidence", newValue);
   });
   // Update min detection confidence.
   detectionConfidence.addEventListener("change", () => {
     const newValue = Number(clamp(detectionConfidence.value, 0.05, 1));
     hands.setOptions({ minDetectionConfidence: newValue });
     detectionConfidence.value = newValue;
+    window.localStorage.setItem("detectionConfidence", newValue);
   });
   // Update model complexity.
   complexModel.addEventListener("change", () => {
     const newValue = Number(clamp(Math.round(complexModel.value), 0, 1));
     hands.setOptions({ modelComplexity: newValue });
     complexModel.value = newValue;
+    window.localStorage.setItem("complexModel", newValue);
   });
 }
 
@@ -286,13 +317,19 @@ const hands = new Hands({
     return `lib/hands/${file}`;
   },
 });
-hands.setOptions({
-  selfieMode: true,
+const params = {
+  selfieMode: "true" === getSavedOrDefault("hFlip", "true"),
   maxNumHands: 2,
-  minTrackingConfidence: 0.1,
-  minDetectionConfidence: 0.25,
-  modelComplexity: 0,
-});
+  minTrackingConfidence: Number(getSavedOrDefault("trackingConfidence", 0.1)),
+  minDetectionConfidence: Number(
+    getSavedOrDefault("detectionConfidence", 0.25)
+  ),
+  modelComplexity: Number(getSavedOrDefault("complexModel", 0)),
+};
+updateInput(params);
+// Set up listeners after updating the input.
+initializeListeners();
+hands.setOptions(params);
 hands.onResults(onResults);
 const camera = new Camera(videoElement, {
   onFrame: async () => {
@@ -302,7 +339,6 @@ const camera = new Camera(videoElement, {
   width: canvasElement.width,
   height: canvasElement.height,
 });
-initializeListeners();
 wsConnect();
 setInterval(wsWatch, 1000);
 camera.start();

@@ -3,10 +3,14 @@
 Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.  
 To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.
 
-While it still isn't fast enough to play more difficult tracks with many varying airnotes or like Expert diffculties and above, it basically still gives sort of that authentic hand raising experience, if you want to try that out how it would feel like.  
-It still also depends on how fast your webcam is, and also what angle the webcam looks at your hand.  
-I have the camera pointing downwards at the table at a ~45 degree angle from table's perpendicular.  
-For accuracy it tends to do better when the hand's top profile is pointing towards the camera, but still at an angle so that raising your hand would bring its position towards the top of the captured image.
+While it still isn't fast enough to play more difficult tracks with many varying airnotes or like Expert diffculties and above, it basically still gives sort of that authentic hand raising experience, if you want to try out how it would feel like.
+
+Webcam tips:
+It still also depends on how fast your webcam is, and also what angle the webcam looks at your hand.
+
+- I have the camera pointing downwards at the table at a ~45 degree angle from table's perpendicular.
+- For accuracy it tends to do better when the hand's top profile is pointing towards the camera, but still at an angle so that raising your hand would bring its position towards the top of the captured image.
+- Additionally adjusting the settings of your webcam could help: specifically reducing the exposure settings should improve the tracking because it incrases the responsiveness by taking less longer to capture a frame at the cost of light. Try to have the exposure as low as possible but just high enough so it is not too dark for the hand tracking to still recognize your hands easily.
 
 Uses hand tracking: Hands from https://github.com/google/mediapipe
 
@@ -23,7 +27,7 @@ To get the minified .js file I used https://coderaiser.github.io/minify/
 
 Software adapter for various Chunithm slider controllers with a built-in Brokenithm web controller. Has support for keyboard/gamepad output and LED lighting. Requires Windows 8 or later.
 
-[Download link](https://github.com/4yn/slidershim/releases/latest) | [Demo Video (Brokestalgia)](https://youtu.be/1PEtBP3cOew) | [UMIGURI setup instructions](https://user-images.githubusercontent.com/8877057/175786037-c0c3238b-5032-4d69-833c-5fb147d85734.mp4)
+[Download link](https://github.com/kobitoko/slidershim-handtracking/releases/latest) | [Demo Video (Brokestalgia)](https://youtu.be/1PEtBP3cOew) | [UMIGURI setup instructions](https://user-images.githubusercontent.com/8877057/175786037-c0c3238b-5032-4d69-833c-5fb147d85734.mp4)
 
 > Starting 0.2.0, there are reports that windows defender may block this software. You may need to disable windows defender the first time you run slidershim. If you are not comfortable with this, you can [download an older version here](https://github.com/4yn/slidershim/releases/tag/v0.1.4) that is known to be OK with windows defender.
 
@@ -31,6 +35,9 @@ Software adapter for various Chunithm slider controllers with a built-in Brokeni
 
 ## Changelog
 
+- v0.5.3
+  - Brokenithm hand tracking: Added save feature using localStorage, to save ZoneHeight, Horizontal Camera Flip, Tracking and Detection Confidence, and Model Complexity.
+  - Brokenithm hand tracking: Fixed a bug where the zone height would start off at a different size and not change until readjusting the zone height.
 - v0.5.2
   - Brokenithm hand tracking changed hand tracking library to MediaPipe
 - v0.5.1
