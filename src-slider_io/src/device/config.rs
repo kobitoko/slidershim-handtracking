@@ -14,6 +14,7 @@ pub enum BrokenithmSpec {
   Basic,
   GroundOnly,
   Nostalgia,
+  HandTracking,
 }
 
 #[derive(Debug, Clone)]
@@ -84,6 +85,13 @@ impl DeviceMode {
       },
       "brokenithm-nostalgia" => DeviceMode::Brokenithm {
         spec: BrokenithmSpec::Nostalgia,
+        lights_enabled: false,
+        port: u16::try_from(v["brokenithmPort"].as_i64()?)
+          .ok()
+          .or(Some(1606))?,
+      },
+      "brokenithm-handtracking" => DeviceMode::Brokenithm {
+        spec: BrokenithmSpec::HandTracking,
         lights_enabled: false,
         port: u16::try_from(v["brokenithmPort"].as_i64()?)
           .ok()

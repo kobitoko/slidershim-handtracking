@@ -9,6 +9,8 @@ https://github.com/4yn/slidershim
 
 # Changelog
 
+- v0.5.2
+  - Add Brokenithm option with webcam hand tracking for air notes (https://github.com/kobitoko/slidershim-handtracking)
 - v0.5.1
   - Support SSL/wss if brokenithm used with tunnelling. Thanks @kokarare1212
 - v0.5.0

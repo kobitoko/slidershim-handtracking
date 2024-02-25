@@ -39,11 +39,27 @@ static BROKENITHM_STR_FILES: phf::Map<&'static str, (&'static str, &'static str)
   "index-ns.html" => (include_str!("./brokenithm-www/index-ns.html"), "text/html"),
   "index-go.html" => (include_str!("./brokenithm-www/index-go.html"), "text/html"),
   "index.html" => (include_str!("./brokenithm-www/index.html"), "text/html"),
+  "handtracker.html" => (include_str!("./brokenithm-www/handtracker/index.html"), "text/html"),
+  "styles.css" => (include_str!("./brokenithm-www/handtracker/styles.css"), "text/css"),
+  "mediapipe-hands-min.js" => (include_str!("./brokenithm-www/handtracker/mediapipe-hands-min.js"), "text/javascript"),
+  "lib/camera_utils/camera_utils.js" => (include_str!("./brokenithm-www/handtracker/lib/camera_utils/camera_utils.js"), "text/javascript"),
+  "lib/drawing_utils/drawing_utils.js" => (include_str!("./brokenithm-www/handtracker/lib/drawing_utils/drawing_utils.js"), "text/javascript"),
+  "lib/hands/hands.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands.js"), "text/javascript"),
+  "lib/hands/hands_solution_packed_assets_loader.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_packed_assets_loader.js"), "text/javascript"),
+  "lib/hands/hands_solution_simd_wasm_bin.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.js"), "text/javascript"),
+  "lib/hands/hands_solution_wasm_bin.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_wasm_bin.js"), "text/javascript")
 };
 
 static BROKENITHM_BIN_FILES: phf::Map<&'static str, (&'static [u8], &'static str)> = phf_map! {
   "favicon.ico" => (include_bytes!("./brokenithm-www/favicon.ico"), "image/x-icon"),
   "icon.png" => (include_bytes!("./brokenithm-www/icon.png"), "image/png"),
+  "lib/hands/hand_landmark_full.tflite" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hand_landmark_full.tflite"), "application/octet-stream"),
+  "lib/hands/hand_landmark_lite.tflite" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hand_landmark_lite.tflite"), "application/octet-stream"),
+  "lib/hands/hands.binarypb" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands.binarypb"), "application/octet-stream"),
+  "lib/hands/hands_solution_packed_assets.data" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_packed_assets.data"), "application/octet-stream"),
+  "lib/hands/hands_solution_simd_wasm_bin.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.wasm"), "application/octet-stream"),
+  "lib/hands/hands_solution_wasm_bin.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_wasm_bin.wasm"), "application/octet-stream"),
+  "lib/hands/hands_solution_simd_wasm_bin.data" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.data"), "application/octet-stream"),
 };
 
 async fn serve_file(path: &str) -> Result<Response<Body>, Infallible> {
@@ -71,6 +87,7 @@ async fn handle_brokenithm(
   ws_stream: WebSocketStream<Upgraded>,
   state: SliderState,
   lights_enabled: bool,
+  spec: BrokenithmSpec,
 ) {
   let (mut ws_write, mut ws_read) = ws_stream.split();
 
@@ -113,6 +130,18 @@ async fn handle_brokenithm(
                       .ok();
                   }
                 }
+                7 => {
+                  if chars[0] == 'd' {
+                    // Air notes for webcam hand tracker.
+                    let mut input_handle = state_handle.input.lock();
+                    for (idx, c) in chars[1..7].iter().enumerate() {
+                      input_handle.air[idx] = match *c == '1' {
+                        false => 0,
+                        true => 1,
+                      }
+                    }
+                  }
+                }
                 39 => {
                   if chars[0] == 'b' {
                     let mut input_handle = state_handle.input.lock();
@@ -122,10 +151,12 @@ async fn handle_brokenithm(
                         true => 255,
                       }
                     }
-                    for (idx, c) in chars[33..39].iter().enumerate() {
-                      input_handle.air[idx] = match *c == '1' {
-                        false => 0,
-                        true => 1,
+                    if !matches!(spec, BrokenithmSpec::HandTracking) {
+                      for (idx, c) in chars[33..39].iter().enumerate() {
+                        input_handle.air[idx] = match *c == '1' {
+                          false => 0,
+                          true => 1,
+                        }
                       }
                     }
                   }
@@ -196,6 +227,7 @@ async fn handle_websocket(
   mut request: Request<Body>,
   state: SliderState,
   lights_enabled: bool,
+  spec: BrokenithmSpec,
 ) -> Result<Response<Body>, Infallible> {
   let res = match handshake::server::create_response_with_body(&request, || Body::empty()) {
     Ok(res) => {
@@ -209,7 +241,7 @@ async fn handle_websocket(
             )
             .await;
 
-            handle_brokenithm(ws_stream, state, lights_enabled).await;
+            handle_brokenithm(ws_stream, state, lights_enabled, spec).await;
           }
 
           Err(e) => {
@@ -257,9 +289,10 @@ async fn handle_request(
       BrokenithmSpec::Basic => serve_file("index.html").await,
       BrokenithmSpec::GroundOnly => serve_file("index-go.html").await,
       BrokenithmSpec::Nostalgia => serve_file("index-ns.html").await,
+      BrokenithmSpec::HandTracking => serve_file("index-go.html").await,
     },
     (filename, false) => serve_file(&filename[1..]).await,
-    ("/ws", true) => handle_websocket(request, state, lights_enabled).await,
+    ("/ws", true) => handle_websocket(request, state, lights_enabled, spec).await,
     _ => error_response().await,
   }
 }
