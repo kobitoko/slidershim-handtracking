@@ -1,7 +1,7 @@
 ## Slidershim with Brokenithm Hand Tracking
 
 Slidershim with a Brokenithm option that includes hand tracking via a webcam on your browser.  
-To connect it, select the option, and when going to the host server address in a browser like Chrome, at the end of the path add `/handtracker.html`.
+To connect it, select the option, and when going to the localhost server address in a browser like Chrome, at the end of the path add `/handtracker.html`.
 
 While it still isn't fast enough to play more difficult tracks with many varying airnotes or like Expert diffculties and above, it basically still gives sort of that authentic hand raising experience, if you want to try out how it would feel like.
 
@@ -12,10 +12,11 @@ It still also depends on how fast your webcam is, and also what angle the webcam
 - For accuracy it tends to do better when the hand's top profile is pointing towards the camera, but still at an angle so that raising your hand would bring its position towards the top of the captured image.
 - Additionally adjusting the settings of your webcam could help: specifically reducing the exposure settings should improve the tracking because it incrases the responsiveness by taking less longer to capture a frame at the cost of light. Try to have the exposure as low as possible but just high enough so it is not too dark for the hand tracking to still recognize your hands easily.
 
-Uses hand tracking: Hands from https://github.com/google/mediapipe
+Uses hand tracking from MediaPipe Solutions https://developers.google.com/mediapipe/solutions
 
 - Has input options so you can tweak some handtracking parameters in `handtracker.html`.
-- [Downloaded MediaPipe from NPM](https://www.npmjs.com/package/@mediapipe/hands) and included its files so it loads the webmodel not from a CDN but all locally.
+- MediaPipe Solutions [TasksVision from NPM](https://www.npmjs.com/package/@mediapipe/tasks-vision) and included its files so it loads the webmodel not from a CDN but all locally.
+- Hand Landmarker (full) Model [hand_landmarker.task](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker/index#models) also included locally.
 
 To get the minified .js file I used https://coderaiser.github.io/minify/  
 `npm i minify -g`  

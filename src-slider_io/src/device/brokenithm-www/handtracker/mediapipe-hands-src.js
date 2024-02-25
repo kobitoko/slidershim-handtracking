@@ -1,6 +1,11 @@
-// Example taken from https://google.github.io/mediapipe/solutions/hands.html#javascript-solution-api
-// or at my fork https://github.com/kobitoko/mediapipe/blob/master/docs/solutions/hands.md#javascript-solution-api
-// since google said the web page will be removed on April 3, 2023 for a new MediaPipe Solution at https://developers.google.com/mediapipe/solutions/guide#legacy
+import {
+  HandLandmarker,
+  FilesetResolver,
+  DrawingUtils,
+} from "./lib/tasks-vision/vision_bundle.mjs";
+
+// Example reference used found in https://developers.google.com/mediapipe/solutions/vision/hand_landmarker/web_js#video
+// official code example: https://codepen.io/mediapipe-preview/pen/gOKBGPN
 const videoElement = document.getElementById("video");
 const canvasElement = document.getElementById("canvas");
 const canvasCtx = canvasElement.getContext("2d");
@@ -13,18 +18,22 @@ const customHeight = document.getElementById("customHeight");
 let canvasOffset = null;
 
 const pauseButton = document.getElementById("pauseButton");
-const hFlip = document.getElementById("hFlip");
 const trackingConfidence = document.getElementById("trackingConfidence");
 const detectionConfidence = document.getElementById("detectionConfidence");
-const complexModel = document.getElementById("complexModel");
+const handPresenceConfidence = document.getElementById(
+  "handPresenceConfidence"
+);
+
+let handLandmarker = undefined;
+let drawingUtils = undefined;
+let lastVideoTime = -1;
 
 let paused = false;
-let cameraRenderer = true;
-let horizontalFlip = true;
-let hand0 = {};
-let hand1 = {};
-let lastHandValue0 = -1;
-let lastHandValue1 = -1;
+let handDetectionRender = true;
+let rightHand = {};
+let leftHand = {};
+let lastRightHandAirValue = -1;
+let lastLeftHandAirValue = -1;
 let zoneHeight = 200;
 let zoneLevels = zoneHeight / 6;
 
@@ -52,16 +61,12 @@ function updateInput(params) {
   zoneLevels = zoneHeight / 6;
   customHeight.value = zoneHeight;
   zone.style.height = zoneHeight + "px";
-  // Update horizontal flip.
-  hFlip.textContent = params.selfieMode
-    ? "Unflip Camera Horizontally"
-    : "Flip Camera Horizontally";
   // Update min tracking confidence.
   trackingConfidence.value = params.minTrackingConfidence;
   // Update min detection confidence.
-  detectionConfidence.value = params.minDetectionConfidence;
-  // Update model complexity.
-  complexModel.value = params.modelComplexity;
+  detectionConfidence.value = params.minHandDetectionConfidence;
+  // Update min hand presence confidence.
+  handPresenceConfidence.value = params.minHandPresenceConfidence;
 }
 
 function initializeListeners() {
@@ -81,40 +86,31 @@ function initializeListeners() {
   });
   // Disable rendering the camera renderer, saves some CPU probably.
   cameraButton.addEventListener("click", () => {
-    cameraRenderer = !cameraRenderer;
-    cameraButton.textContent = cameraRenderer
-      ? "Disable Camera Renderer"
-      : "Enable Camera Renderer";
-  });
-  // Update horizontal flip.
-  hFlip.addEventListener("click", () => {
-    horizontalFlip = !horizontalFlip;
-    hFlip.textContent = horizontalFlip
-      ? "Unflip Camera Horizontally"
-      : "Flip Camera Horizontally";
-    hands.setOptions({ selfieMode: horizontalFlip });
-    window.localStorage.setItem("hFlip", horizontalFlip);
+    handDetectionRender = !handDetectionRender;
+    cameraButton.textContent = handDetectionRender
+      ? "Disable Hand Detection Render"
+      : "Enable Hand Detection Render";
   });
   // Update min tracking confidence.
-  trackingConfidence.addEventListener("change", () => {
+  trackingConfidence.addEventListener("change", async () => {
     const newValue = Number(clamp(trackingConfidence.value, 0.05, 1));
-    hands.setOptions({ minTrackingConfidence: newValue });
     trackingConfidence.value = newValue;
-    window.localStorage.setItem("trackingConfidence", newValue);
+    window.localStorage.setItem("minTrackingConfidence", newValue);
+    handLandmarker.setOptions({ minTrackingConfidence: newValue });
   });
   // Update min detection confidence.
-  detectionConfidence.addEventListener("change", () => {
+  detectionConfidence.addEventListener("change", async () => {
     const newValue = Number(clamp(detectionConfidence.value, 0.05, 1));
-    hands.setOptions({ minDetectionConfidence: newValue });
     detectionConfidence.value = newValue;
-    window.localStorage.setItem("detectionConfidence", newValue);
+    window.localStorage.setItem("minHandDetectionConfidence", newValue);
+    handLandmarker.setOptions({ minHandDetectionConfidence: newValue });
   });
-  // Update model complexity.
-  complexModel.addEventListener("change", () => {
-    const newValue = Number(clamp(Math.round(complexModel.value), 0, 1));
-    hands.setOptions({ modelComplexity: newValue });
-    complexModel.value = newValue;
-    window.localStorage.setItem("complexModel", newValue);
+  // Update handPresenceConfidence.
+  handPresenceConfidence.addEventListener("change", async () => {
+    const newValue = Number(clamp(handPresenceConfidence.value, 0.05, 1));
+    handPresenceConfidence.value = newValue;
+    window.localStorage.setItem("minHandPresenceConfidence", newValue);
+    handLandmarker.setOptions({ minHandPresenceConfidence: newValue });
   });
 }
 
@@ -129,29 +125,33 @@ function getAirZoneValue(hand) {
 }
 
 function updateHands() {
-  const handValue0 = getAirZoneValue(hand0);
-  const handValue1 = getAirZoneValue(hand1);
-  if (handValue0 != lastHandValue0 || handValue1 != lastHandValue1) {
-    updateTouches(handValue0, handValue1);
+  const rightHandAirValue = getAirZoneValue(rightHand);
+  const leftHandAirValue = getAirZoneValue(leftHand);
+  if (
+    rightHandAirValue != lastRightHandAirValue ||
+    leftHandAirValue != lastLeftHandAirValue
+  ) {
+    updateTouches(rightHandAirValue, leftHandAirValue);
   }
-  showResults(handValue0, handValue1);
-  lastHandValue0 = handValue0;
-  lastHandValue1 = handValue1;
+  showResults(rightHandAirValue, leftHandAirValue);
+  lastRightHandAirValue = rightHandAirValue;
+  lastLeftHandAirValue = leftHandAirValue;
 }
 
-function showResults(handValue0, handValue1) {
-  if (cameraRenderer) {
+function showResults(rightHandAirValue, leftHandAirValue) {
+  if (handDetectionRender) {
     canvasOffset = canvas.getBoundingClientRect();
     zone.style.left = canvasOffset.left + "px";
     zone.style.width = canvasOffset.width + "px";
-    if (hand0?.side != null) {
-      circle.style.transform = setStyleTransform(hand0);
+    // instead of actual side check, just see if it exists. Occasionally left/right swaps when confidence is lower.
+    if (rightHand?.sideIndex != null) {
+      circle.style.transform = setStyleTransform(rightHand);
     }
-    if (hand1?.side != null) {
-      circle2.style.transform = setStyleTransform(hand1);
+    if (leftHand?.sideIndex != null) {
+      circle2.style.transform = setStyleTransform(leftHand);
     }
   }
-  height.textContent = handValue0 + ", " + handValue1;
+  height.textContent = rightHandAirValue + ", " + leftHandAirValue;
 }
 
 function setStyleTransform(hand) {
@@ -165,49 +165,62 @@ function setStyleTransform(hand) {
 }
 
 function onResults(results) {
-  if (!!results.multiHandLandmarks) {
-    for (let i = 0; i < results.multiHandLandmarks.length; i++) {
-      // An array len 2 (if 2 hands). Consisting of an array of 21 landmarks object: x,y,z,visibility.
+  if (!!results.landmarks && results.landmarks.length > 0) {
+    for (let i = 0; i < results.landmarks.length; i++) {
+      // An array len 2 (if 2 hands). Consisting of an array of 21 landmarks object: x,y,z.
       let hand = {};
-      const currentHand = results.multiHandLandmarks[i];
-      for (const [k, definition] of Object.entries(results.multiHandedness)) {
-        // An object with displayName: undefined, index: 0, label: "Left" or "Right", score: 0.989}
-        if (definition.index === i) {
-          hand.side = definition.label;
-          break;
+      const currentHand = results.landmarks[i];
+      if (!!results.handedness && results.handedness.length > 0) {
+        // results.handedness is Category[][]
+        for (const handEntry of results.handedness) {
+          // handEntry is an array of objects, so lets look inside that object. Unsure if this is ever more than 1 entry.
+          // [{score: 0.90789794921875, index: 1, categoryName: 'Left', displayName: 'Left'}]
+          let entryMatched = false;
+          for (const entry of handEntry) {
+            if (entry.index == i) {
+              hand.sideIndex = entry.index;
+              hand.name = entry.categoryName;
+              entryMatched = true;
+              break;
+            }
+          }
+          if (entryMatched) {
+            break;
+          }
         }
+      } else {
+        console.warn(
+          "Result Landmarks exists, but no handednesses information exists.",
+          results
+        );
       }
       if (currentHand.length > 9) {
         // Center of hand approximation is landmark 0 (hand start) and 9 (middle finger knuckle).
         hand.x = (currentHand[0].x + currentHand[9].x) / 2;
         hand.y = (currentHand[0].y + currentHand[9].y) / 2;
-        if (i === 0) {
-          hand0 = hand;
-        } else if (i === 1) {
-          hand1 = hand;
+        if (hand.sideIndex === 1) {
+          leftHand = hand;
+        } else {
+          // default to right hand.
+          rightHand = hand;
         }
       }
     }
     updateHands();
   }
-  if (cameraRenderer && !!results.multiHandLandmarks) {
+  if (handDetectionRender && !!results.landmarks) {
     // Drawing camera view + hand tracking
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(
-      results.image,
-      0,
-      0,
-      canvasElement.width,
-      canvasElement.height
-    );
-
-    for (const landmarks of results.multiHandLandmarks) {
-      drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-        color: "#00FF00",
+    for (const landmarks of results.landmarks) {
+      drawingUtils.drawConnectors(landmarks, HandLandmarker.HAND_CONNECTIONS, {
+        color: "#00AA00",
         lineWidth: 2,
       });
-      drawLandmarks(canvasCtx, landmarks, { color: "#0000FF", lineWidth: 2 });
+      drawingUtils.drawLandmarks(landmarks, {
+        color: "#00FF00",
+        lineWidth: 1,
+      });
     }
     canvasCtx.restore();
   }
@@ -310,35 +323,73 @@ const wsWatch = () => {
   }
 };
 
-// Start the hand tracking!
-const hands = new Hands({
-  locateFile: (file) => {
-    console.log("looking for:", `lib/hands/${file}`);
-    return `lib/hands/${file}`;
-  },
-});
 const params = {
-  selfieMode: "true" === getSavedOrDefault("hFlip", "true"),
-  maxNumHands: 2,
-  minTrackingConfidence: Number(getSavedOrDefault("trackingConfidence", 0.1)),
-  minDetectionConfidence: Number(
-    getSavedOrDefault("detectionConfidence", 0.25)
+  numHands: 2,
+  minTrackingConfidence: Number(
+    getSavedOrDefault("minTrackingConfidence", 0.1)
   ),
-  modelComplexity: Number(getSavedOrDefault("complexModel", 0)),
-};
-updateInput(params);
-// Set up listeners after updating the input.
-initializeListeners();
-hands.setOptions(params);
-hands.onResults(onResults);
-const camera = new Camera(videoElement, {
-  onFrame: async () => {
-    await hands.send({ image: videoElement });
+  minHandPresenceConfidence: Number(
+    getSavedOrDefault("minHandPresenceConfidence", 0.5)
+  ),
+  minHandDetectionConfidence: Number(
+    getSavedOrDefault("minHandDetectionConfidence", 0.25)
+  ),
+  baseOptions: {
+    modelAssetPath: "lib/hand-landmarker_float_16/hand_landmarker.task",
+    delegate: "GPU",
   },
-  facingMode: "user",
-  width: canvasElement.width,
-  height: canvasElement.height,
-});
+  runningMode: "VIDEO",
+};
+
+// Before we can use HandLandmarker class we must wait for it to finish
+// loading. Machine Learning models can be large and take a moment to
+// get everything needed to run.
+async function initializeHandTracking() {
+  updateInput(params);
+  // Set up listeners after updating the input.
+  initializeListeners();
+  drawingUtils = new DrawingUtils(canvasCtx);
+  const vision = await FilesetResolver.forVisionTasks("lib/tasks-vision/wasm");
+  handLandmarker = await HandLandmarker.createFromOptions(vision, params);
+}
+
+function startCamera() {
+  // Check if webcam access is supported.
+  if (!navigator.mediaDevices?.getUserMedia) {
+    console.error("getUserMedia() is not supported by your browser");
+    alert("getUserMedia() is not supported by your browser");
+    return;
+  }
+  if (!handLandmarker) {
+    console.error("hand landmarker failed to be created...");
+    return;
+  }
+  const UsermediaParam = { video: true };
+  navigator.mediaDevices.getUserMedia(UsermediaParam).then((stream) => {
+    videoElement.addEventListener("loadeddata", mainLoop);
+    // Set the canvas to the right size according to the video.
+    videoElement.addEventListener("loadedmetadata", () => {
+      canvasElement.height = videoElement.videoHeight;
+      canvasElement.width = videoElement.videoWidth;
+    });
+    videoElement.srcObject = stream;
+  });
+}
+
+function mainLoop() {
+  let startTimeMs = performance.now();
+  if (lastVideoTime !== videoElement.currentTime) {
+    lastVideoTime = videoElement.currentTime;
+    let results = handLandmarker.detectForVideo(videoElement, startTimeMs);
+    onResults(results);
+  }
+  // its a loop, call again.
+  window.requestAnimationFrame(mainLoop);
+}
+
 wsConnect();
 setInterval(wsWatch, 1000);
-camera.start();
+
+initializeHandTracking().then(() => {
+  startCamera();
+});

@@ -42,24 +42,17 @@ static BROKENITHM_STR_FILES: phf::Map<&'static str, (&'static str, &'static str)
   "handtracker.html" => (include_str!("./brokenithm-www/handtracker/index.html"), "text/html"),
   "styles.css" => (include_str!("./brokenithm-www/handtracker/styles.css"), "text/css"),
   "mediapipe-hands-min.js" => (include_str!("./brokenithm-www/handtracker/mediapipe-hands-min.js"), "text/javascript"),
-  "lib/camera_utils/camera_utils.js" => (include_str!("./brokenithm-www/handtracker/lib/camera_utils/camera_utils.js"), "text/javascript"),
-  "lib/drawing_utils/drawing_utils.js" => (include_str!("./brokenithm-www/handtracker/lib/drawing_utils/drawing_utils.js"), "text/javascript"),
-  "lib/hands/hands.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands.js"), "text/javascript"),
-  "lib/hands/hands_solution_packed_assets_loader.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_packed_assets_loader.js"), "text/javascript"),
-  "lib/hands/hands_solution_simd_wasm_bin.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.js"), "text/javascript"),
-  "lib/hands/hands_solution_wasm_bin.js" => (include_str!("./brokenithm-www/handtracker/lib/hands/hands_solution_wasm_bin.js"), "text/javascript")
+  "lib/tasks-vision/vision_bundle.mjs" => (include_str!("./brokenithm-www/handtracker/lib/tasks-vision/vision_bundle.mjs"), "text/javascript"),
+  "lib/tasks-vision/wasm/vision_wasm_internal.js" => (include_str!("./brokenithm-www/handtracker/lib/tasks-vision/wasm/vision_wasm_internal.js"), "text/javascript"),
+  "lib/tasks-vision/wasm/vision_wasm_nosimd_internal.js" => (include_str!("./brokenithm-www/handtracker/lib/tasks-vision/wasm/vision_wasm_nosimd_internal.js"), "text/javascript"),
 };
 
 static BROKENITHM_BIN_FILES: phf::Map<&'static str, (&'static [u8], &'static str)> = phf_map! {
   "favicon.ico" => (include_bytes!("./brokenithm-www/favicon.ico"), "image/x-icon"),
   "icon.png" => (include_bytes!("./brokenithm-www/icon.png"), "image/png"),
-  "lib/hands/hand_landmark_full.tflite" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hand_landmark_full.tflite"), "application/octet-stream"),
-  "lib/hands/hand_landmark_lite.tflite" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hand_landmark_lite.tflite"), "application/octet-stream"),
-  "lib/hands/hands.binarypb" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands.binarypb"), "application/octet-stream"),
-  "lib/hands/hands_solution_packed_assets.data" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_packed_assets.data"), "application/octet-stream"),
-  "lib/hands/hands_solution_simd_wasm_bin.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.wasm"), "application/octet-stream"),
-  "lib/hands/hands_solution_wasm_bin.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_wasm_bin.wasm"), "application/octet-stream"),
-  "lib/hands/hands_solution_simd_wasm_bin.data" => (include_bytes!("./brokenithm-www/handtracker/lib/hands/hands_solution_simd_wasm_bin.data"), "application/octet-stream"),
+  "lib/tasks-vision/wasm/vision_wasm_internal.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/tasks-vision/wasm/vision_wasm_internal.wasm"), "application/wasm"),
+  "lib/tasks-vision/wasm/vision_wasm_nosimd_internal.wasm" => (include_bytes!("./brokenithm-www/handtracker/lib/tasks-vision/wasm/vision_wasm_nosimd_internal.wasm"), "application/wasm"),
+  "lib/hand-landmarker_float_16/hand_landmarker.task" => (include_bytes!("./brokenithm-www/handtracker/lib/hand-landmarker_float_16/hand_landmarker.task"), "application/octet-stream"),
 };
 
 async fn serve_file(path: &str) -> Result<Response<Body>, Infallible> {

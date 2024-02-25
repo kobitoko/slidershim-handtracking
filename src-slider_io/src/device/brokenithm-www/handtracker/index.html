@@ -4,9 +4,7 @@
     <meta charset="utf-8" />
     <title>Brokenithm with hand tracking for air notes</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="lib/camera_utils/camera_utils.js"></script>
-    <script src="lib/drawing_utils/drawing_utils.js"></script>
-    <script src="lib/hands/hands.js"></script>
+    <script type="module" src="lib/tasks-vision/vision_bundle.mjs"></script>
   </head>
 
   <body>
@@ -34,8 +32,7 @@
           <button id="pauseButton">Running</button>
         </div>
         <div>
-          <button id="cameraButton">Disable Camera Renderer</button>
-          <button id="hFlip">Flip Camera Horizontal</button>
+          <button id="cameraButton">Disable Hand Detection Render</button>
           <div>
             <label for="trackingConfidence">Min Tracking Confidence:</label>
             <input
@@ -61,29 +58,29 @@
             />
           </div>
           <div>
-            <label for="complexModel">Model Complexity:</label>
+            <label for="handPresenceConfidence"
+              >Min Hand Presence Confidence:</label
+            >
             <input
               type="number"
-              min="0"
+              min="0.05"
               max="1"
-              value="0"
-              step="1"
-              id="complexModel"
+              value="0.5"
+              step="0.05"
+              id="handPresenceConfidence"
               class="range"
             />
           </div>
         </div>
       </div>
-      <div>
+      <div class="container">
+        <video autoplay="autoplay" id="video"></video>
+        <canvas id="canvas"></canvas>
         <div id="circle" class="circle pink"></div>
         <div id="circle2" class="circle pink"></div>
         <div id="zone" class="green"></div>
       </div>
-      <div class="container">
-        <video autoplay="autoplay" id="video"></video>
-        <canvas width="640px" height="360px" id="canvas"></canvas>
-      </div>
     </div>
-    <script src="mediapipe-hands-min.js"></script>
+    <script type="module" src="mediapipe-hands-min.js"></script>
   </body>
 </html>

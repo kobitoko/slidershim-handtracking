@@ -248,7 +248,14 @@
             {#if deviceMode === "brokenithm-handtracking"}
               Hand tracking website for PC browser & webcam will be running at:
               <div class="iplist">
+                {` http://localhost:${
+                  brokenithmPort || 1606
+                }/handtracker.html\n`}
                 {ips
+                  .filter(
+                    // media device webcam only works in secure and localhost.
+                    (f) => f.includes("127.0.0.1")
+                  )
                   .map(
                     (x) =>
                       `http://${x}:${brokenithmPort || 1606}/handtracker.html`

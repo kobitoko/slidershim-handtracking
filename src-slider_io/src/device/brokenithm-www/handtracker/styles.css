@@ -10,7 +10,6 @@ body {
   border-radius: 50%;
 }
 #zone {
-  width: 650px;
   position: absolute;
   pointer-events: none;
 }
@@ -20,8 +19,13 @@ body {
 .green {
   background: rgba(0, 255, 0, 0.2);
 }
-#video {
-  display: none;
+#video, #canvas {
+  display:inline;
+  position: absolute;
+  z-index: -2;
+}
+#canvas {
+  z-index: -1;
 }
 .inline {
   display: inline;
@@ -34,7 +38,6 @@ body {
 #content {
   display: block;
   text-align-last: center;
-  margin-top: 15px;
 }
 .button {
   margin: 0.25em;
